@@ -14,7 +14,13 @@ const io = socketIo(server);
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
-app.use(cors());
+const corsOptions = {
+  origin: 'https://jozefpv.github.io', // Permitir solo este origen
+  methods: 'GET,POST', // Métodos permitidos
+  allowedHeaders: 'Content-Type,Authorization' // Cabeceras permitidas
+};
+
+app.use(cors(corsOptions));
 
 app.post('/getImages', async (req, res) => {
   const prompt = req.body;
