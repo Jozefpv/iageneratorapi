@@ -43,15 +43,16 @@ app.post('/getImages', async (req, res) => {
         }
       }
     );
-
-    console.log('Respuesta de la API externa:', response.data);
-
-    const imageId = response.data.id;
-
-    return res.status(200).json({ imageId });
+    console.log('Respuesta de la API:', response.data); // Muestra el cuerpo de la respuesta
   } catch (error) {
-    console.error('Error al solicitar la imagen:', error);
-    res.status(500).send('Hubo un error al generar la imagen');
+    // Si hay un error, muestra toda la respuesta de la API, si está disponible
+    if (error.response) {
+      console.error('Error en la respuesta:', error.response.status);  // Código de estado
+      console.error('Encabezados de la respuesta:', error.response.headers);  // Encabezados
+      console.error('Cuerpo de la respuesta:', error.response.data);  // Cuerpo de la respuesta
+    } else {
+      console.error('Error al realizar la solicitud:', error.message);  // Si hay un error en la solicitud
+    }
   }
 });
 
