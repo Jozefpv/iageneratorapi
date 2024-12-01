@@ -9,15 +9,21 @@ const apiKey = process.env.AUTH;
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+  cors: {
+    origin: 'https://jozefpv.github.io',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }
+});
 
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 const corsOptions = {
-  origin: 'https://jozefpv.github.io', // Permitir solo este origen
-  methods: 'GET,POST', // Métodos permitidos
-  allowedHeaders: 'Content-Type,Authorization' // Cabeceras permitidas
+  origin: 'https://jozefpv.github.io',
+  methods: 'GET,POST',
+  allowedHeaders: 'Content-Type,Authorization'
 };
 
 app.use(cors(corsOptions));
