@@ -9,24 +9,12 @@ const apiKey = process.env.AUTH;
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: {
-    origin: process.env.NODE_ENV === 'production' ? "https://iageneratorapi.onrender.com" : "http://localhost:4200", 
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-    credentials: true
-  }
-});
+const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? "https://iageneratorapi.onrender.com" : "http://localhost:4200",
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"],
-  credentials: true
-}));
+app.use(cors());
 
 app.post('/getImages', async (req, res) => {
   const prompt = req.body;
