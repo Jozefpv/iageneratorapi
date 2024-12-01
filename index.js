@@ -3,12 +3,15 @@ const axios = require('axios');
 const cors = require('cors');
 const socketIo = require('socket.io');
 const http = require('http');
+require('dotenv').config();
+
+const apiKey = process.env.AUTH;
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:4200",
+    origin: process.env.NODE_ENV === 'production' ? "https://iageneratorapi.onrender.com" : "http://localhost:4200", 
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
     credentials: true
@@ -17,8 +20,9 @@ const io = socketIo(server, {
 
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
+
 app.use(cors({
-  origin: "http://localhost:4200",
+  origin: process.env.NODE_ENV === 'production' ? "https://iageneratorapi.onrender.com" : "http://localhost:4200",
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type"],
   credentials: true
@@ -34,7 +38,7 @@ app.post('/getImages', async (req, res) => {
       prompt,
       {
         headers: {
-          'Authorization': 'f64psixY348VEyeVVf6RoZNK40H-9kK9',
+          'Authorization': apiKey,
           'Content-Type': 'application/json'
         }
       }
