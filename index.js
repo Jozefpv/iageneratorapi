@@ -32,27 +32,25 @@ app.post('/getImages', async (req, res) => {
   const prompt = req.body;
   console.log('Recibiendo solicitud para generar imagen con:', req.body);
 
-  try {
-    const response = await axios.post(
-      'https://cl.imagineapi.dev/items/images/',
-      prompt,
-      {
-        headers: {
-          'Authorization': 'yQrrja14kwacTQgnMCtmj05tp7K_9PqL',
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    console.log('Respuesta de la API:', response.data); // Muestra el cuerpo de la respuesta
+    try {
+      const response = await fetch('https://cl.imagineapi.dev/items/images/', {
+          method: 'POST',
+          headers: {
+              'Authorization': 'Bearer yQrrja14kwacTQgnMCtmj05tp7K_9PqL',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(prompt)
+      });
+
+      const responseData = await response.json();
+      console.log(responseData);
+
+    const imageId = responseData.data.id;
+
+    return res.status(200).json({ imageId });
   } catch (error) {
-    // Si hay un error, muestra toda la respuesta de la API, si está disponible
-    if (error.response) {
-      console.error('Error en la respuesta:', error.response.status);  // Código de estado
-      console.error('Encabezados de la respuesta:', error.response.headers);  // Encabezados
-      console.error('Cuerpo de la respuesta:', error.response.data);  // Cuerpo de la respuesta
-    } else {
-      console.error('Error al realizar la solicitud:', error.message);  // Si hay un error en la solicitud
-    }
+    console.error('Error al solicitar la imagen:', error);
+    res.status(500).send('Hubo un error al generar la imagen');
   }
 });
 
