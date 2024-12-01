@@ -26,7 +26,7 @@ app.post('/getImages', async (req, res) => {
       prompt,
       {
         headers: {
-          'Authorization': apiKey,
+          'Authorization': 'yQrrja14kwacTQgnMCtmj05tp7K_9PqL',
           'Content-Type': 'application/json'
         }
       }
