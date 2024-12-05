@@ -76,7 +76,7 @@ app.post('/webhook', async (req, res) => {
 
     const { status, id, upscaled_urls, error, progress, url } = payload;
 
-    const userGuid = await getUserGuidByImageGuid(id);
+    const {userGuid} = await getUserGuidByImageGuid(id);
     console.log(userGuid, "depuracion 1")
     if (userGuid) {
       
