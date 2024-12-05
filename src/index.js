@@ -85,19 +85,19 @@ app.post('/webhook', async (req, res) => {
 
       if (userSocketId) {
         const socket = io.sockets.sockets.get(userSocketId);
-
+        console.log('Status recibido:', status); 
         if (status === 'completed' && upscaled_urls) {
           socket.emit('imageReady', { id, upscaledUrls: upscaled_urls });
-          console.log('Imagen generada y lista:', upscaled_urls);
+          //console.log('Imagen generada y lista:', upscaled_urls);
         } else if (status === 'failed') {
           socket.emit('imageError', { id, error });
-          console.log('Error en la generación de la imagen:', error);
+          //console.log('Error en la generación de la imagen:', error);
         } else if (status === 'in-progress') {
           socket.emit('imageProgress', { id, progress });
-          console.log(`Imagen en progreso: ${progress}%`);
+          //console.log(`Imagen en progreso: ${progress}%`);
         } else if (status === 'pending') {
           socket.emit('imagePending', { id, url });
-          console.log('Generación de imagen pendiente...');
+          //console.log('Generación de imagen pendiente...');
         }
       }
     }
