@@ -5,8 +5,6 @@ const corsOptions = {
     credentials: true
 };
 
-export { corsOptions };
-
 const ioCorsOptions = {
     cors: {
         origin: ['https://jozefpv.github.io', 'http://localhost:4200'],
