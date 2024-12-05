@@ -54,7 +54,7 @@ export const createImageData = async (imageGuid, userGuid, status) => {
     return data
 }
 
-export const getUserGuidByImageGuid = async (imageGuid) => {
+export const getUserGuidByImageGuidQuery = async (imageGuid) => {
 
     const {data, error} = await supabase    
         .from('images')

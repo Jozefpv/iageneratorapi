@@ -1,4 +1,4 @@
-import { getUserByEmail, createUser } from "../queries/query.js";
+import { getUserByEmail, createUser, getUserGuidByImageGuidQuery } from "../queries/query.js";
 import { hashPassword, verifyPassword } from "../utils/hash.js";
 import jwt from 'jsonwebtoken'
 
@@ -122,7 +122,7 @@ export const test = (req, res) => {
 
 export const getUserGuidByImageGuid = async (imageGuid) => {
     try {
-        const userGuid = await getUserGuidByImageGuid(imageGuid);
+        const userGuid = await getUserGuidByImageGuidQuery(imageGuid);
         if (userGuid == null) {
             return null
         }
