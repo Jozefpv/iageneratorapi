@@ -119,3 +119,16 @@ export const test = (req, res) => {
         
     }
 };
+
+export const getUserGuidByImageGuid = async (imageGuid) => {
+    try {
+        const userGuid = await getUserGuidByImageGuid(imageGuid);
+        if (userGuid == null) {
+            return null
+        }
+
+        return userGuid
+    } catch (error) {
+        return null
+    }
+};

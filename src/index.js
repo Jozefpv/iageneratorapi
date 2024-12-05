@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes.js';
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser';
 import { createImageData } from './queries/query.js';
+import { getUserGuidByImageGuid } from './controllers/usersController.js';
 
 
 dotenv.config();
@@ -37,6 +38,8 @@ app.use(cors(corsOptions));
 
 app.use('/auth', authRoutes)
 
+const userSockets = new Map();
+
 app.post('/getImages', async (req, res) => {
   const promptText = `Black and white line art of ${req.body.prompt}, no colors, clear bold black outlines, no shading, white background, high resolution, designed for kids to color, simple but detailed enough for creativity `;
   const userGuid = req.body.userGuid
@@ -54,7 +57,7 @@ app.post('/getImages', async (req, res) => {
       console.log(responseData);
 
     const imageId = responseData.data.id;
-    const imageStatus = response.data.status;
+    const imageStatus = responseData.data.status;
 
     const image = await createImageData(imageId, userGuid, imageStatus)
 
@@ -72,18 +75,28 @@ app.post('/webhook', (req, res) => {
 
     const { status, id, upscaled_urls, error, progress, url } = payload;
 
-    if (status === 'completed' && upscaled_urls) {
-      io.emit('imageReady', { id, upscaledUrls: upscaled_urls });
-      console.log('Imagen generada y lista:', upscaled_urls);
-    } else if (status === 'failed') {
-      io.emit('imageError', { id, error });
-      console.log('Error en la generación de la imagen:', error);
-    } else if (status === 'in-progress') {
-      io.emit('imageProgress', { id, progress });
-      console.log(`Imagen en progreso: ${progress}%`);
-    } else if (status === 'pending') {
-      io.emit('imagePending', { id, url });
-      console.log('Generación de imagen pendiente...');
+    const userGuid = getUserGuidByImageGuid(id);
+
+    if (userGuid) {
+      const userSocketId = userSockets.get(userGuid);
+
+      if (userSocketId) {
+        const socket = io.sockets.sockets.get(userSocketId);
+
+        if (status === 'completed' && upscaled_urls) {
+          socket.emit('imageReady', { id, upscaledUrls: upscaled_urls });
+          console.log('Imagen generada y lista:', upscaled_urls);
+        } else if (status === 'failed') {
+          socket.emit('imageError', { id, error });
+          console.log('Error en la generación de la imagen:', error);
+        } else if (status === 'in-progress') {
+          socket.emit('imageProgress', { id, progress });
+          console.log(`Imagen en progreso: ${progress}%`);
+        } else if (status === 'pending') {
+          socket.emit('imagePending', { id, url });
+          console.log('Generación de imagen pendiente...');
+        }
+      }
     }
 
     res.status(200).send('Webhook recibido');
@@ -96,8 +109,21 @@ app.post('/webhook', (req, res) => {
 io.on('connection', (socket) => {
   console.log('Nuevo cliente conectado');
 
+  socket.on('userGuid', (userGuid) => {
+    if(userGuid){
+      userSockets.set(userGuid, socket.id)
+      console.log(userSockets)
+    }
+  })
+
   socket.on('disconnect', () => {
-    console.log('Cliente desconectado');
+    for (let [userGuid, socketId] of userSockets) {
+      if (socketId === socket.id) {
+        userSockets.delete(userGuid);
+        console.log(`userGuid ${userGuid} desconectado y eliminado`);
+        break;
+      }
+    }
   });
 });
 

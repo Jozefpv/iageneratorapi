@@ -53,3 +53,22 @@ export const createImageData = async (imageGuid, userGuid, status) => {
 
     return data
 }
+
+export const getUserGuidByImageGuid = async (imageGuid) => {
+
+    const {data, error} = await supabase    
+        .from('images')
+        .select('userGuid')
+        .eq('imageGuid', imageGuid)
+        .limit(1)
+        .single();
+        
+        if (error != null) {
+            if (error.code === 'PGRST116') {
+                return null;
+            }
+            throw new Error('Error al obtener el usuario');
+        }
+
+        return data;
+}
