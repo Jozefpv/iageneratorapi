@@ -41,6 +41,7 @@ app.use('/auth', authRoutes)
 const userSockets = new Map();
 
 app.post('/getImages', async (req, res) => {
+  console.log(req.body)
   const promptText = `Black and white line art of ${req.body.prompt}, no colors, clear bold black outlines, no shading, white background, high resolution, designed for kids to color, simple but detailed enough for creativity `;
   const userGuid = req.body.userGuid
     try {
@@ -68,14 +69,14 @@ app.post('/getImages', async (req, res) => {
   }
 });
 
-app.post('/webhook', (req, res) => {
+app.post('/webhook', async (req, res) => {
   try {
     const { event, payload } = req.body;
     console.log('Webhook recibido:', event, payload);
 
     const { status, id, upscaled_urls, error, progress, url } = payload;
 
-    const userGuid = getUserGuidByImageGuid(id);
+    const userGuid = await getUserGuidByImageGuid(id);
 
     if (userGuid) {
       const userSocketId = userSockets.get(userGuid);
