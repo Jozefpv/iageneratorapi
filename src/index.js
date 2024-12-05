@@ -5,37 +5,25 @@ import http from 'http';
 import authRoutes from './routes/authRoutes.js';
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser';
-import { createImageData } from './queries/query.js';
-import { getUserGuidByImageGuid } from './controllers/usersController.js';
+
+import { corsOptions, ioCorsOptions } from './config/corsConfig.js';
+import { createImageData, getUserGuidByImageGuid } from './controllers/imagesController.js';
 
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: ['https://jozefpv.github.io', 'http://localhost:4200'],
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  }
-});
+const io = new Server(server, ioCorsOptions);
 
 const PORT = process.env.PORT || 3000;
 
-
+//Middlewares para configurar las cors, las cookies y el formato json
 app.use(express.json());
 app.use(cookieParser())
-
-const corsOptions = {
-  origin: ['https://jozefpv.github.io', 'http://localhost:4200'],
-  methods: 'GET,POST',
-  allowedHeaders: 'Content-Type,Authorization',
-  credentials: true
-};
-
 app.use(cors(corsOptions));
 
+//Rutas relacionadas con la autenticación
 app.use('/auth', authRoutes)
 
 const userSockets = new Map();
@@ -48,7 +36,7 @@ app.post('/getImages', async (req, res) => {
       const response = await fetch('https://cl.imagineapi.dev/items/images/', {
           method: 'POST',
           headers: {
-              'Authorization': 'Bearer yQrrja14kwacTQgnMCtmj05tp7K_9PqL',
+              'Authorization': `Bearer ${process.env.AUTH}`,
               'Content-Type': 'application/json'
           },
           body: JSON.stringify({prompt: promptText})

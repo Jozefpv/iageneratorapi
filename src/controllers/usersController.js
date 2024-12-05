@@ -1,4 +1,4 @@
-import { getUserByEmail, createUser, getUserGuidByImageGuidQuery } from "../queries/query.js";
+import { getUserByEmailQuery, createUserQuery } from "../queries/query.js";
 import { hashPassword, verifyPassword } from "../utils/hash.js";
 import jwt from 'jsonwebtoken'
 
@@ -6,13 +6,13 @@ export const registerUser = async (req, res) => {
     try {
         const {name, email, password} = req.body
 
-        const existingUser = await getUserByEmail(email);
+        const existingUser = await getUserByEmailQuery(email);
         if (existingUser != null) {
             return res.status(400).json({ message: 'El usuario ya existe' });
         }
 
         const hashedPassword = await hashPassword(password);
-        const newUser = await createUser(name, email, hashedPassword);
+        const newUser = await createUserQuery(name, email, hashedPassword);
 
         return res.status(201).json({ user: newUser });
     } catch (error) {
@@ -27,7 +27,7 @@ export const loginUser = async (req, res) => {
 
         const {email, password} = req.body;
 
-        const user = await getUserByEmail(email)
+        const user = await getUserByEmailQuery(email)
 
         if(!user){
             return res.status(400).json({ message: 'Usuario no encontrado'})
@@ -97,19 +97,6 @@ export const validateToken = (req, res) => {
     }
 }
 
-
-export const createImageData = async (imageGuid, userGuid, status) => {
-    try {
-        const newImage = await createImageData(imageGuid, userGuid, status);
-
-        return res.status(201).json({ iamge: newImage });
-    } catch (error) {
-        if (!res.headersSent) {
-            return res.status(500).json({ message: 'Error al insertar los datos de la imagen', error });
-        }
-    }
-};
-
 export const test = (req, res) => {
     try {
         const token = req.cookies.access_token;
@@ -120,15 +107,3 @@ export const test = (req, res) => {
     }
 };
 
-export const getUserGuidByImageGuid = async (imageGuid) => {
-    try {
-        const userGuid = await getUserGuidByImageGuidQuery(imageGuid);
-        if (userGuid == null) {
-            return null
-        }
-
-        return userGuid
-    } catch (error) {
-        return null
-    }
-};

@@ -1,7 +1,6 @@
 import supabase from "../config/db.js"
-import { hashPassword } from "../utils/hash.js"
-hashPassword
-export const getUser = async () => {
+
+export const getUserQuery = async () => {
     const {data, error} = await supabase    
         .from('users')
         .select('*')
@@ -10,7 +9,7 @@ export const getUser = async () => {
     return data
 }
 
-export const getUserByEmail = async (email) => {
+export const getUserByEmailQuery = async (email) => {
     const {data, error} = await supabase    
         .from('users')
         .select('email, password, userGuid')
@@ -28,7 +27,7 @@ export const getUserByEmail = async (email) => {
         return data;
 }
 
-export const createUser = async (name, email, password) => {
+export const createUserQuery = async (name, email, password) => {
 
     const {data, error} = await supabase.from('users').insert([
         { name, email, password}
@@ -41,7 +40,7 @@ export const createUser = async (name, email, password) => {
     return data
 }
 
-export const createImageData = async (imageGuid, userGuid, status) => {
+export const createImageDataQuery = async (imageGuid, userGuid, status) => {
 
     const {data, error} = await supabase.from('images').insert([
         { imageGuid, userGuid, status}
