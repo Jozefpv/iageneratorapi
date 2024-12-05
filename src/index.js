@@ -77,9 +77,11 @@ app.post('/webhook', async (req, res) => {
     const { status, id, upscaled_urls, error, progress, url } = payload;
 
     const userGuid = await getUserGuidByImageGuid(id);
-
+    console.log(userGuid, "depuracion 1")
     if (userGuid) {
+      
       const userSocketId = userSockets.get(userGuid);
+      console.log(userSocketId, "depuracion 2")
 
       if (userSocketId) {
         const socket = io.sockets.sockets.get(userSocketId);
