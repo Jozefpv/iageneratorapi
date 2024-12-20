@@ -71,3 +71,16 @@ export const getUserDataByImageGuidQuery = async (imageGuid) => {
 
         return data;
 }
+
+export const updateUserImageCountQuery = async (userGuid, newImageCount) => {
+    const { data, error } = await supabase
+        .from('users')
+        .update({ imageCount: newImageCount})
+        .eq('guid', userGuid);
+
+    if (error) {
+        throw new Error(`Error al actualizar el contador de imágenes: ${error.message}`);
+    }
+
+    return data;
+};
