@@ -7,7 +7,7 @@ import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser';
 
 import { corsOptions, ioCorsOptions } from './config/corsConfig.js';
-import { createImageData, getUserGuidByImageGuid } from './controllers/imagesController.js';
+import { createImageData, getUserDataByImageGuid, updateUserImageCount } from './controllers/imagesController.js';
 
 
 dotenv.config();
@@ -64,10 +64,12 @@ app.post('/webhook', async (req, res) => {
 
     const { status, id, upscaled_urls, error, progress, url } = payload;
 
-    const userData = await getUserGuidByImageGuid(id);
+    const userData = await getUserDataByImageGuid(id);
     console.log(userData, "depuracion 1")
     if (userData && userData.imageCount <= 5) {
-      
+
+      await updateUserImageCount(userData.userGuid, userData.imageCount + 1);
+
       const userSocketId = userSockets.get(userData.userGuid);
       console.log(userSocketId, "depuracion 2")
 

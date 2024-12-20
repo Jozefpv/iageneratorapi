@@ -1,4 +1,4 @@
-import { getUserGuidByImageGuidQuery, createImageDataQuery, updateUserImageCountQuery } from "../queries/query.js";
+import { getUserDataByImageGuidQuery, createImageDataQuery, updateUserImageCountQuery } from "../queries/query.js";
 
 export const createImageData = async (imageGuid, userGuid, status) => {
     try {
@@ -14,7 +14,7 @@ export const createImageData = async (imageGuid, userGuid, status) => {
 
 export const getUserGuidByImageGuid = async (imageGuid) => {
     try {
-        const userData = await getUserGuidByImageGuidQuery(imageGuid);
+        const userData = await getUserDataByImageGuidQuery(imageGuid);
         if (userData == null) {
             return null
         }
