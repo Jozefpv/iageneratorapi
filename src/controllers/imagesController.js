@@ -12,7 +12,7 @@ export const createImageData = async (imageGuid, userGuid, status) => {
     }
 };
 
-export const getUserGuidByImageGuid = async (imageGuid) => {
+export const getUserDataByImageGuid = async (imageGuid) => {
     try {
         const userData = await getUserDataByImageGuidQuery(imageGuid);
         if (userData == null) {
