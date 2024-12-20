@@ -14,12 +14,12 @@ export const createImageData = async (imageGuid, userGuid, status) => {
 
 export const getUserGuidByImageGuid = async (imageGuid) => {
     try {
-        const userGuid = await getUserGuidByImageGuidQuery(imageGuid);
-        if (userGuid == null) {
+        const userData = await getUserGuidByImageGuidQuery(imageGuid);
+        if (userData == null) {
             return null
         }
 
-        return userGuid
+        return userData
     } catch (error) {
         return null
     }

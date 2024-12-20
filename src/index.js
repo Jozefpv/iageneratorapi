@@ -64,11 +64,11 @@ app.post('/webhook', async (req, res) => {
 
     const { status, id, upscaled_urls, error, progress, url } = payload;
 
-    const {userGuid} = await getUserGuidByImageGuid(id);
-    console.log(userGuid, "depuracion 1")
-    if (userGuid) {
+    const userData = await getUserGuidByImageGuid(id);
+    console.log(userData, "depuracion 1")
+    if (userData && userData.imageCount <= 5) {
       
-      const userSocketId = userSockets.get(userGuid);
+      const userSocketId = userSockets.get(userData.userGuid);
       console.log(userSocketId, "depuracion 2")
 
       if (userSocketId) {
