@@ -27,8 +27,7 @@ export const getUserDataByImageGuid = async (imageGuid) => {
 
 
 
-export const updateUserImageCount = async (req, res) => {
-    const { userGuid, newImageCount } = req.body;
+export const updateUserImageCount = async (userGuid, newImageCount) => {
 
     try {
         const updatedUser = await updateUserImageCountQuery(userGuid, newImageCount);
