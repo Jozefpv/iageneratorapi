@@ -45,11 +45,11 @@ export const loginUser = async (req, res) => {
         const token = jwt.sign({email: user.email}, process.env.SECRET_JWT_KEY , { expiresIn: '1h' });
 
         console.log("TOKEN", token)
-        return res
-        .cookie('access_token', token, {
+        res.cookie('access_token', token, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'strict'
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 1000,
         })
         .status(200)
         .json({success: true, userGuid: user.userGuid });
