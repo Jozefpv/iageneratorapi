@@ -76,34 +76,38 @@ export const logoutUser = (req, res) => {
     }
 };
 
-export const validateToken = (req, res) => {
+export const validateToken = async (req, res) => {
     try {
-        const token = req.cookies.access_token
-        console.log("llega el token?", token)
-        if(!token){
-            return res.status(401).json({success: false, message: 'Token no encontrado'})
+        const token = req.cookies.access_token;
+        if (!token) {
+            return res.status(401).json({ success: false, message: 'Token no encontrado' });
         }
 
         const secret = process.env.SECRET_JWT_KEY;
-
-        if(!secret){
+        if (!secret) {
             throw new Error('SECRET_JWT_KEY no está configurado');
         }
 
-        jwt.verify(token, secret);
-        return res.status(200).json({ success: true, message: 'Token valido'});
-    } catch (error) {
-        return res.status(401).json({ success: false, message: 'Token inválido o expirado' });
-    }
-}
+        // Verificar el token y obtener el payload
+        const decoded = jwt.verify(token, secret);
+        console.log('Payload del token:', decoded);
 
-export const test = (req, res) => {
-    try {
-        const token = req.cookies.access_token;
-        console.log("llega el token", token)
-        res.status(200).json({success: true, message:"test valido"})
+        // Verificar estado de la sesión (opcional)
+        const session = await db.sessions.findOne({ where: { jti: decoded.jti } });
+        if (!session) {
+            return res.status(401).json({ success: false, message: 'Sesión inválida o cerrada' });
+        }
+
+        return res.status(200).json({ success: true, message: 'Token válido', data: decoded });
     } catch (error) {
-        
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ success: false, message: 'El token ha expirado' });
+        } else if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        } else {
+            console.error('Error interno:', error);
+            return res.status(500).json({ success: false, message: 'Error interno del servidor' });
+        }
     }
 };
 

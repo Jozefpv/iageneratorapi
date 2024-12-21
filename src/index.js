@@ -68,7 +68,7 @@ app.post('/webhook', async (req, res) => {
     console.log(userData, "depuracion 1")
     if (userData && userData.imageCount <= 5) {
 
-      await updateUserImageCount(userData.userGuid, userData.imageCount + 1);
+     //await updateUserImageCount(userData.userGuid, userData.imageCount + 1);
 
       const userSocketId = userSockets.get(userData.userGuid);
       console.log(userSocketId, "depuracion 2")
