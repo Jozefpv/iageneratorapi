@@ -73,14 +73,33 @@ export const getUserDataByImageGuidQuery = async (imageGuid) => {
 }
 
 export const updateUserImageCountQuery = async (userGuid, newImageCount) => {
+    console.log("llega aqui=???")
     const { data, error } = await supabase
         .from('users')
         .update({ imageCount: newImageCount})
-        .eq('guid', userGuid);
+        .eq('userGuid', userGuid)
 
+        console.log(data)
     if (error) {
         throw new Error(`Error al actualizar el contador de imágenes: ${error.message}`);
     }
-
-    return data;
 };
+
+export const getImageCountByUserGuidQuery = async (userGuid) => {
+    const {data, error} = await supabase    
+        .from('users')
+        .select('imageCount')
+        .eq('userGuid', userGuid)
+        .limit(1)
+        .single();
+        
+        console.log(data, error)
+        if (error != null) {
+            if (error.code === 'PGRST116') {
+                return null;
+            }
+            throw new Error('Error al obtener el usuario');
+        }
+
+        return data;
+}

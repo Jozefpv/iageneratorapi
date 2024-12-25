@@ -1,4 +1,4 @@
-import { getUserDataByImageGuidQuery, createImageDataQuery, updateUserImageCountQuery } from "../queries/query.js";
+import { getUserDataByImageGuidQuery, createImageDataQuery, updateUserImageCountQuery, getImageCountByUserGuidQuery } from "../queries/query.js";
 
 export const createImageData = async (imageGuid, userGuid, status) => {
     try {
@@ -26,20 +26,28 @@ export const getUserDataByImageGuid = async (imageGuid) => {
 };
 
 
+export const getImageCountByUserGuid = async (userGuid) => {
+    try {
+        console.log("llega=")
+        const userData = await getImageCountByUserGuidQuery(userGuid);
+        console.log("user data", userData)
+        if (userData == null) {
+            return null
+        }
+
+        return userData
+    } catch (error) {
+        return null
+    }
+};
+
 
 export const updateUserImageCount = async (userGuid, newImageCount) => {
-
     try {
-        const updatedUser = await updateUserImageCountQuery(userGuid, newImageCount);
+        await updateUserImageCountQuery(userGuid, newImageCount);
 
-        if (!updatedUser || updatedUser.length === 0) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
-        }
-
-        return res.status(200).json({ message: 'Usuario actualizado exitosamente', user: updatedUser });
+        return { status: 200, message: 'Usuario actualizado exitosamente', user: updatedUser };
     } catch (error) {
-        if (!res.headersSent) {
-            return res.status(500).json({ message: 'Error al actualizar el usuario', error: error.message });
-        }
+        return { status: 500, message: 'Error al actualizar el usuario', error: error.message };
     }
 };

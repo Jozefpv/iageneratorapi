@@ -7,7 +7,7 @@ import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser';
 
 import { corsOptions, ioCorsOptions } from './config/corsConfig.js';
-import { createImageData, getUserDataByImageGuid, updateUserImageCount } from './controllers/imagesController.js';
+import { createImageData, getImageCountByUserGuid, getUserDataByImageGuid, updateUserImageCount } from './controllers/imagesController.js';
 
 
 dotenv.config();
@@ -33,6 +33,19 @@ app.post('/getImages', async (req, res) => {
   const promptText = `Black and white line art of ${req.body.prompt}, no colors, clear bold black outlines, no shading, white background, high resolution, designed for kids to color, simple but detailed enough for creativity `;
   const userGuid = req.body.userGuid
     try {
+
+
+      
+      const test = await getImageCountByUserGuid(userGuid)
+      console.log("aqui, " , test)
+
+      if(test.imageCount > 4){
+        res.status(401).json({counter: -1})
+      }
+
+      const newCounter = test.imageCount + 1
+      updateUserImageCount(userGuid,  newCounter)
+
       const response = await fetch('https://cl.imagineapi.dev/items/images/', {
           method: 'POST',
           headers: {
@@ -48,12 +61,11 @@ app.post('/getImages', async (req, res) => {
     const imageId = responseData.data.id;
     const imageStatus = responseData.data.status;
 
-    const image = await createImageData(imageId, userGuid, imageStatus)
+    const image =  await createImageData(imageId, userGuid, imageStatus)
 
     return res.status(200).json({ image: image });
   } catch (error) {
-    console.error('Error al solicitar la imagen:', error);
-    res.status(500).send('Hubo un error al generar la imagen');
+
   }
 });
 
@@ -65,10 +77,7 @@ app.post('/webhook', async (req, res) => {
     const { status, id, upscaled_urls, error, progress, url } = payload;
 
     const userData = await getUserDataByImageGuid(id);
-    console.log(userData, "depuracion 1")
-    if (userData && userData.imageCount <= 5) {
-
-     //await updateUserImageCount(userData.userGuid, userData.imageCount + 1);
+    if (userData) {
 
       const userSocketId = userSockets.get(userData.userGuid);
       console.log(userSocketId, "depuracion 2")
