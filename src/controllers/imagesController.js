@@ -2,16 +2,13 @@ import { getUserDataByImageGuidQuery, createImageDataQuery, updateUserImageCount
 
 export const createImageData = async (imageGuid, userGuid, status) => {
     try {
-        const newImage = await createImageDataQuery(imageGuid, userGuid, status);
-
-        return res.status(201).json({ iamge: newImage });
+      const newImage = await createImageDataQuery(imageGuid, userGuid, status);
+      return newImage;
     } catch (error) {
-        if (!res.headersSent) {
-            return res.status(500).json({ message: 'Error al insertar los datos de la imagen', error });
-        }
+      throw new Error('Error al insertar los datos de la imagen: ' + error.message);
     }
-};
-
+  };
+  
 export const getUserDataByImageGuid = async (imageGuid) => {
     try {
         const userData = await getUserDataByImageGuidQuery(imageGuid);

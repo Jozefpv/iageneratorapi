@@ -33,9 +33,6 @@ app.post('/getImages', async (req, res) => {
   const promptText = `Black and white line art of ${req.body.prompt}, no colors, clear bold black outlines, no shading, white background, high resolution, designed for kids to color, simple but detailed enough for creativity `;
   const userGuid = req.body.userGuid
     try {
-
-
-      
       const test = await getImageCountByUserGuid(userGuid)
       console.log("aqui, " , test)
 
@@ -61,11 +58,12 @@ app.post('/getImages', async (req, res) => {
     const imageId = responseData.data.id;
     const imageStatus = responseData.data.status;
 
-    const image =  await createImageData(imageId, userGuid, imageStatus)
+    const image = await createImageData(imageId, userGuid, imageStatus);
 
-    return res.status(200).json({ image: image });
+    return res.status(200).json({ image });
   } catch (error) {
-
+    console.error('Error en /getImages:', error);
+    return res.status(500).json({ message: 'Error al procesar la solicitud', error });
   }
 });
 
