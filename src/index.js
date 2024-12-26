@@ -75,6 +75,8 @@ app.post('/webhook', async (req, res) => {
     const { status, id, upscaled_urls, error, progress, url } = payload;
 
     const userData = await getUserDataByImageGuid(id);
+    console.log('Resultado de Supabase:', userData);
+
     if (userData) {
 
       const userSocketId = userSockets.get(userData.userGuid);
