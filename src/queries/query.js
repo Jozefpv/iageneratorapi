@@ -57,7 +57,7 @@ export const getUserDataByImageGuidQuery = async (imageGuid) => {
 
     const {data, error} = await supabase    
         .from('images')
-        .select('userGuid, imageCount')
+        .select('userGuid')
         .eq('imageGuid', imageGuid)
         .limit(1)
         .single();
