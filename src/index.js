@@ -75,30 +75,33 @@ app.post('/webhook', async (req, res) => {
     const { status, id, upscaled_urls, error, progress, url } = payload;
 
     const userData = await getUserDataByImageGuid(id);
-    console.log('Resultado de Supabase:', userData);
+    console.log('Resultado de Supabase (userData):', userData);
 
     if (userData) {
+      const userGuid = userData.userGuid;
+      console.log('Buscando userGuid en userSockets:', userGuid);
 
-      const userSocketId = userSockets.get(userData.userGuid);
-      console.log(userSocketId, "depuracion 2")
+      const userSocketId = userSockets.get(userGuid);
+      console.log('userSocketId encontrado:', userSocketId);
 
       if (userSocketId) {
         const socket = io.sockets.sockets.get(userSocketId);
-        console.log('Status recibido:', status); 
+        console.log('Socket encontrado:', socket);
+
         if (status === 'completed' && upscaled_urls) {
           socket.emit('imageReady', { id, upscaledUrls: upscaled_urls });
-          //console.log('Imagen generada y lista:', upscaled_urls);
         } else if (status === 'failed') {
           socket.emit('imageError', { id, error });
-          //console.log('Error en la generación de la imagen:', error);
         } else if (status === 'in-progress') {
           socket.emit('imageProgress', { id, progress });
-          //console.log(`Imagen en progreso: ${progress}%`);
         } else if (status === 'pending') {
           socket.emit('imagePending', { id, url });
-          //console.log('Generación de imagen pendiente...');
         }
+      } else {
+        console.warn('No se encontró un socket para el userGuid:', userGuid);
       }
+    } else {
+      console.warn('No se encontró userData para el id:', id);
     }
 
     res.status(200).send('Webhook recibido');
