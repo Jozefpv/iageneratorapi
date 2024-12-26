@@ -117,7 +117,16 @@ io.on('connection', (socket) => {
   socket.on('userGuid', (userGuid) => {
     if(userGuid){
       userSockets.set(userGuid, socket.id)
-      console.log(userSockets)
+    }
+  })
+
+  socket.on('logout', (data) => {
+    const userGuid = data.userGuid;
+    if (userGuid) {
+      // Realiza alguna acción adicional al logout, si es necesario
+      console.log(`Cerrando sesión para el userGuid: ${userGuid}`);
+      userSockets.delete(userGuid);
+      console.log(`userGuid ${userGuid} eliminado del mapa`);
     }
   })
 
@@ -129,7 +138,7 @@ io.on('connection', (socket) => {
         break;
       }
     }
-  });
+  })
 });
 
 server.listen(PORT, () => {
