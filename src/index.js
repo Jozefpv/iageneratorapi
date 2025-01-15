@@ -141,6 +141,10 @@ io.on('connection', (socket) => {
   })
 });
 
+app.get('/cron-endpoint', (req, res) => {
+  res.status(200).json({ message: 'Cron ejecutado correctamente' });
+});
+
 server.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
