@@ -5,6 +5,8 @@ import http from 'http';
 import authRoutes from './routes/authRoutes.js';
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser';
+import rateLimit from 'express-rate-limit';
+
 
 import { corsOptions, ioCorsOptions } from './config/corsConfig.js';
 import { createImageData, getImageCountByUserGuid, getUserDataByImageGuid, updateUserImageCount } from './controllers/imagesController.js';
@@ -17,11 +19,19 @@ const server = http.createServer(app);
 const io = new Server(server, ioCorsOptions);
 
 const PORT = process.env.PORT || 3000;
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 80,
+  message: 'Demasiadas solicitudes desde esta IP, intenta nuevamente más tarde.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 //Middlewares para configurar las cors, las cookies y el formato json
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors(corsOptions));
+app.use(apiLimiter);
 
 //Rutas relacionadas con la autenticación
 app.use('/auth', authRoutes)
